@@ -52,7 +52,7 @@ def parse_json(data):
 # INSERT CODE HERE
 ######################################################################
 @app.route("/health", methods=["GET"])
-def health_check():
+def health():
     return {"status":"OK"}, 200
 
 @app.route("/count", methods=["GET"])
@@ -61,3 +61,15 @@ def count():
     count = db.songs.count_documents({})
 
     return {"count": count}, 200
+
+@app.route("/song", methods=["GET"])
+def songs():
+    songs=db.songs.find({})
+    return {"songs":list(parse_json(songs))}
+
+@app.route("/song/<int:id>", methods=["GET"])
+def get_song_by_id(id):
+    song=db.songs.find_one({"id": id})
+    if song==None:
+        return {"message": "song with id not found"}, 404
+    return parse_json(song), 200
